@@ -137,4 +137,25 @@ router.put('/pricing-config', async (req: Request, res: Response) => {
   });
 });
 
+// 8. Driver App Promotional Banner Management
+let driverBanner = {
+  imageUrl: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=800&q=80',
+  title: 'Earn More with BigVora Captain',
+  subtitle: 'Zero commission on your first 15 rides this week! Drive safe.',
+  actionText: 'Explore Perks'
+};
+
+router.get('/banner', (req: Request, res: Response) => {
+  return res.json({ banner: driverBanner });
+});
+
+router.post('/banner', (req: Request, res: Response) => {
+  const { imageUrl, title, subtitle, actionText } = req.body;
+  if (imageUrl) driverBanner.imageUrl = imageUrl;
+  if (title) driverBanner.title = title;
+  if (subtitle) driverBanner.subtitle = subtitle;
+  if (actionText) driverBanner.actionText = actionText;
+  return res.json({ success: true, banner: driverBanner });
+});
+
 export default router;
