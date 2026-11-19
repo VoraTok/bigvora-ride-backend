@@ -59,8 +59,8 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
       await supabase.from('drivers').insert({
         id: user.id,
         vehicle_type: vehicleType || 'bike',
-        vehicle_model: vehicleModel || '',
-        vehicle_number: vehicleNumber || '',
+        vehicle_model: vehicleModel ? vehicleModel.trim() : null,
+        vehicle_number: vehicleNumber ? vehicleNumber.trim() : null,
         kyc_status: 'pending',
         onboarding_step: 1
       });
@@ -80,8 +80,8 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
       const { data: newDrv } = await supabase.from('drivers').insert({
         id: user.id,
         vehicle_type: vehicleType || 'bike',
-        vehicle_model: vehicleModel || '',
-        vehicle_number: vehicleNumber || '',
+        vehicle_model: vehicleModel ? vehicleModel.trim() : null,
+        vehicle_number: vehicleNumber ? vehicleNumber.trim() : null,
         kyc_status: 'pending',
         onboarding_step: 1
       }).select('*').single();
