@@ -283,12 +283,12 @@ export const setupSocketHandlers = (io: Server) => {
         rideId,
         driver: {
           id: driverId,
-          name: driverDetails?.users?.full_name || 'BigVora Captain',
+          name: driverDetails?.users?.full_name || 'Driver',
           phone: driverDetails?.users?.phone || '',
           rating: driverDetails?.rating || 5.0,
           vehicleType: driverDetails?.vehicle_type,
-          vehicleModel: driverDetails?.vehicle_model || 'Standard',
-          vehicleNumber: driverDetails?.vehicle_number || 'DL-XX-XXXX',
+          vehicleModel: driverDetails?.vehicle_model || '',
+          vehicleNumber: driverDetails?.vehicle_number || '',
           lat: driverDetails?.current_lat,
           lng: driverDetails?.current_lng
         },
