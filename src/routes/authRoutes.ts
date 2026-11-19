@@ -34,13 +34,16 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
   // Check existing user in Supabase
   let { data: user } = await supabase.from('users').select('*').eq('phone', phone).single();
 
+  const cleanName = (fullName || '').toString().trim();
+  const isGenericName = !cleanName || cleanName === 'BigVora Captain' || cleanName === 'New Captain' || cleanName === 'Rider' || cleanName === 'BigVora Rider';
+
   if (!user) {
     // Create new User
     const { data: newUser, error: createErr } = await supabase
       .from('users')
       .insert({
         phone,
-        full_name: fullName || (role === 'driver' ? 'New Captain' : 'New Rider'),
+        full_name: isGenericName ? '' : cleanName,
         role: role || 'customer'
       })
       .select('*')
@@ -56,9 +59,10 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
       await supabase.from('drivers').insert({
         id: user.id,
         vehicle_type: vehicleType || 'bike',
-        vehicle_model: vehicleModel || 'Standard',
-        vehicle_number: vehicleNumber || `DL-${Math.floor(10 + Math.random() * 89)}-${Math.floor(1000 + Math.random() * 8999)}`,
-        kyc_status: 'pending'
+        vehicle_model: vehicleModel || '',
+        vehicle_number: vehicleNumber || '',
+        kyc_status: 'pending',
+        onboarding_step: 1
       });
     } else {
       await supabase.from('customers').insert({
@@ -70,8 +74,19 @@ router.post('/verify-otp', async (req: Request, res: Response) => {
 
   // Fetch full details
   let roleDetails = null;
-  if (user.role === 'driver') {
-    const { data: drv } = await supabase.from('drivers').select('*').eq('id', user.id).single();
+  if (role === 'driver') {
+    let { data: drv } = await supabase.from('drivers').select('*').eq('id', user.id).single();
+    if (!drv) {
+      const { data: newDrv } = await supabase.from('drivers').insert({
+        id: user.id,
+        vehicle_type: vehicleType || 'bike',
+        vehicle_model: vehicleModel || '',
+        vehicle_number: vehicleNumber || '',
+        kyc_status: 'pending',
+        onboarding_step: 1
+      }).select('*').single();
+      drv = newDrv;
+    }
     roleDetails = drv;
   } else {
     const { data: cust } = await supabase.from('customers').select('*').eq('id', user.id).single();
